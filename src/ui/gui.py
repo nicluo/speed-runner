@@ -12,8 +12,16 @@ APP_HEIGHT = 180
 PADDING = 50
 
 class SRWindow(tk.Tk):
-    def __init__(self):
-        tk.Tk.__init__(self)
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
+        self.s = SubWindow(self)
+        self.geometry("%dx%d%+d%+d" % (0, 0, 0, 0))
+        self.bind_all("<space>", self.s.onTrigger)
+        self.focus_force()
+
+class SubWindow(tk.Toplevel):
+    def __init__(self, *args, **kwargs):
+        tk.Toplevel.__init__(self, *args, **kwargs)
         self.windowConfig()
         self.fixToTopRight()
         self.frame = BorderedFrame(self)
