@@ -1,8 +1,4 @@
-from src.ui.gui import SRWindow
-
-def gui():
-    app=SRWindow()
-    app.mainloop()
+from speedrunner import SpeedRunner
 
 if __name__ == '__main__':
-    gui()
+    SpeedRunner()
