@@ -10,7 +10,7 @@ FONT_PATH = 'assets/fonts/DSEG/fonts/DSEG7-Modern/DSEG7Modern-BoldItalic.ttf'
 class NumberDisplay(tk.Canvas):
     def __init__(self, *args, **kwargs):
         tk.Canvas.__init__(self, *args, **kwargs)
-        self.font_size = 30
+        self.font_size = int(int(self['height'])*0.7)
         self.canvas_image = None
         self.seconds = None
         self.set_time(0)
@@ -26,7 +26,7 @@ class NumberDisplay(tk.Canvas):
         self.image = self._time_to_image(time_string)
         if self.canvas_image is not None:
             self.delete(self.canvas_image)
-        self.canvas_image = self.create_image(82, 25, image=self.image)
+        self.canvas_image = self.create_image((int(self['width']) + 4)/2, self.font_size*0.8, image=self.image)
 
     def _time_to_image(self, time_string):
         W, H = int(self['width']), int(self['height'])

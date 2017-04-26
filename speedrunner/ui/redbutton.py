@@ -15,8 +15,7 @@ class RedButton(tk.Canvas):
         self.enter_overlay = None
         self.click_overlay = None
 
-        self.config(width="100", height="100")
-        self.create_image(50, 50, image=self.image)
+        self.create_image(int(self['width'])/2, int(self['height'])/2, image=self.image)
         self.bind_events()
 
     def load_images(self):
@@ -26,7 +25,7 @@ class RedButton(tk.Canvas):
 
     def load_button_image(self, path):
         image = Image.open(path)
-        image = image.resize((90, 90), Image.ANTIALIAS)
+        image = image.resize((int(self['width'])-10, int(self['height'])-10), Image.ANTIALIAS)
         return ImageTk.PhotoImage(image)
 
     def bind_events(self):
@@ -36,7 +35,7 @@ class RedButton(tk.Canvas):
         self.bind("<Leave>", self.handle_leave)
 
     def handle_click(self, event):
-        self.click_overlay = self.create_image(50, 50, image=self.click_image)
+        self.click_overlay = self.create_image(int(self['width'])/2, int(self['height'])/2, image=self.click_image)
 
     def handle_release(self, event):
         self.delete(self.click_overlay)
@@ -46,7 +45,7 @@ class RedButton(tk.Canvas):
     def handle_enter(self, event):
         # This check lets a long click take precedence
         if self.click_overlay is None:
-            self.enter_overlay = self.create_image(50, 50, image=self.enter_image)
+            self.enter_overlay = self.create_image(int(self['width'])/2, int(self['height'])/2, image=self.enter_image)
 
     def handle_leave(self, event):
         if self.enter_overlay is not None:

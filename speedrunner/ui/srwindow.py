@@ -54,40 +54,41 @@ class SubWindow(tk.Toplevel):
     """Sticky, always-on-top window for the main UI"""
     def __init__(self, *args, **kwargs):
         tk.Toplevel.__init__(self, *args, **kwargs)
-        self.window_config()
-        self.fix_to_top_right()
-        self.pack_frame()
-        self.place_red_button()
-        self.number_display = NumberDisplay(self.frame, width=160, height=40)
-        self.place_number_display()
         self.stop_watch = StopWatch()
         self.timer = Timer()
-        self.show_button = False
+        self.show_button = True
         self.split_number_displays = []
+        self.scale = 1
+        self.frame = None
+        self.window_config()
+        self.render()
         self.update()
 
     def render(self):
+        self.width = APP_WIDTH * self.scale
+        self.height = APP_HEIGHT * self.scale
+        if not self.show_button:
+            self.height -= 110 * self.scale
+        offset = 15 * self.scale
+        if self.frame is not None:
+            self.frame.destroy()
+        self.frame = BorderedFrame(self, width=self.width, height=self.height)
+        self.frame.pack()
         if self.show_button:
-            pass
+            self.redButton = RedButton(self.frame, width=100*self.scale, height=100*self.scale)
+            self.redButton.bind("<<Click>>", self.on_trigger)
+            self.redButton.place(bordermode='inside', x=(self.width-int(self.redButton['width']))/2,  y=offset)
+            offset += 110 * self.scale
+        self.number_display = NumberDisplay(self.frame, width=160*self.scale, height=40*self.scale)
+        self.number_display.place(bordermode='inside', x=(self.width-(160*self.scale))/2, y=offset)
+        self.fix_to_top_right()
 
     def update(self):
         self.number_display.set_time(self.stop_watch.read())
         self.after(100, self.update)
 
-    def pack_frame(self):
-        self.frame = BorderedFrame(self, width=APP_WIDTH, height=APP_HEIGHT)
-        self.frame.pack()
-
-    def place_red_button(self):
-        self.redButton = RedButton(self.frame)
-        self.redButton.bind("<<Click>>", self.on_trigger)
-        self.redButton.place(bordermode='inside', x=(APP_WIDTH-100)/2,  y=15)
-
     def remove_red_button(self):
         self.redButton.destroy()
-
-    def place_number_display(self):
-        self.number_display.place(bordermode='inside', x=(APP_WIDTH-160)/2,  y=125)
 
     def window_config(self):
         self.overrideredirect(1)
@@ -96,7 +97,7 @@ class SubWindow(tk.Toplevel):
 
     def fix_to_top_right(self):
         screen_width = self.winfo_screenwidth()
-        left = '+' + str(screen_width - WINDOW_PADDING - APP_WIDTH)
+        left = '+' + str(screen_width - WINDOW_PADDING - int(self.width))
         top = '+' + str(WINDOW_PADDING)
         self.geometry(left + top)
 
@@ -108,10 +109,13 @@ class SubWindow(tk.Toplevel):
             self.frame.border('black')
 
     def on_resize_up(self, event):
-        pass
+        self.scale += 0.1
+        self.render()
 
     def on_resize_down(self, event):
-        pass
+        self.scale -= 0.1
+        self.scale = max(self.scale, 0.6)
+        self.render()
 
     def on_reset(self, event):
         self.stop_watch.reset()
