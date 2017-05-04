@@ -6,13 +6,19 @@ from PIL import Image, ImageTk, ImageFont, ImageDraw
 
 BASE_DIR = sys._MEIPASS if getattr( sys, 'frozen', False ) else ''
 FONT_PATH = 'assets/fonts/DSEG/fonts/DSEG7-Modern/DSEG7Modern-BoldItalic.ttf'
+FOREGROUND_COLOUR = (245, 29, 31)
+BACKGROUND_COLOUR = (240, 240, 240)
+X_OFFSET = 5
 
 class NumberDisplay(tk.Canvas):
     def __init__(self, *args, **kwargs):
         tk.Canvas.__init__(self, *args, **kwargs)
-        self.font_size = int(int(self['height'])*0.7)
+        self.width = int(self['width'])
+        self.height = int(self['height'])
         self.canvas_image = None
         self.seconds = None
+        self.font_path = os.path.join(BASE_DIR, FONT_PATH)
+        self._calc_font_size()
         self.set_time(0)
 
     def set_time(self, seconds):
@@ -26,15 +32,27 @@ class NumberDisplay(tk.Canvas):
         self.image = self._time_to_image(time_string)
         if self.canvas_image is not None:
             self.delete(self.canvas_image)
-        self.canvas_image = self.create_image((int(self['width']) + 4)/2, self.font_size*0.8, image=self.image)
+        self.canvas_image = self.create_image((self.width + X_OFFSET)/2, self.height/2, image=self.image)
+
+    def _calc_font_size(self):
+        W, H = self.width, self.height
+        font_size = self.height
+        image = Image.new("RGB", (W, H))
+        draw = ImageDraw.Draw(image)
+        while True:
+            font = ImageFont.truetype(self.font_path, font_size)
+            w, h = draw.textsize("88:88:88", font=font)
+            if w <= W and h <= H:
+                break;
+            font_size -= 1
+        self.font_size = font_size
 
     def _time_to_image(self, time_string):
-        W, H = int(self['width']), int(self['height'])
+        W, H = self.width, self.height
         image = Image.new("RGB", (W, H), "white")
         draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype(os.path.join(BASE_DIR, FONT_PATH),
-                                  self.font_size)
+        font = ImageFont.truetype(self.font_path, self.font_size)
         w, h = draw.textsize(time_string, font=font)
-        draw.text(((W-w)/2,(H-h)/2), "88:88:88", font=font, fill=(240, 240, 240))
-        draw.text(((W-w)/2,(H-h)/2), time_string, font=font, fill=(245, 29, 31))
+        draw.text(((W-w)/2,(H-h)/2), "88:88:88", font=font, fill=BACKGROUND_COLOUR)
+        draw.text(((W-w)/2,(H-h)/2), time_string, font=font, fill=FOREGROUND_COLOUR)
         return ImageTk.PhotoImage(image)
