@@ -34,13 +34,16 @@ class SubWindow(tk.Toplevel):
         self.render()
         self.update()
 
-    def render(self):
-        self.width = APP_WIDTH * self.scale
+    def calculate_size(self):
         self.height = APP_HEIGHT * self.scale
+        self.width = APP_WIDTH * self.scale
         if len(self.stop_watch.splits) > 1:
             self.height += (len(self.stop_watch.splits) * 30 * self.scale)
         if not self.show_button:
             self.height -= 110 * self.scale
+
+    def render(self):
+        self.calculate_size()
         offset = 10 * self.scale
         if self.frame is not None:
             self.frame.destroy()
