@@ -8,6 +8,7 @@ BASE_DIR = sys._MEIPASS if getattr( sys, 'frozen', False ) else ''
 FONT_PATH = 'assets/fonts/DSEG/fonts/DSEG7-Modern/DSEG7Modern-BoldItalic.ttf'
 FOREGROUND_COLOUR = (245, 29, 31)
 BACKGROUND_COLOUR = (240, 240, 240)
+Y_OFFSET = 1
 X_OFFSET = 3
 
 class NumberDisplay(tk.Canvas):
@@ -32,7 +33,7 @@ class NumberDisplay(tk.Canvas):
         self.image = self._time_to_image(time_string)
         if self.canvas_image is not None:
             self.delete(self.canvas_image)
-        self.canvas_image = self.create_image(X_OFFSET, 0, image=self.image, anchor="nw")
+        self.canvas_image = self.create_image(X_OFFSET, Y_OFFSET, image=self.image, anchor="nw")
 
     def _calc_font_size(self):
         W, H = self.width, self.height
