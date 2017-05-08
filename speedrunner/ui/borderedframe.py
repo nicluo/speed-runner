@@ -1,5 +1,7 @@
 import Tkinter as tk
 
+PADDING = 7
+
 class BorderedFrame(tk.Frame):
     def __init__(self, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
@@ -10,8 +12,8 @@ class BorderedFrame(tk.Frame):
         self.dimensions(self['width'], self['height'])
 
     def dimensions(self, width, height):
-        self.outer_canvas.configure(width=width, height=height)
-        self.inner_canvas.configure(width=width-14, height=height-14)
+        self.outer_canvas.configure(width=width+14, height=height+14)
+        self.inner_canvas.configure(width=width, height=height)
 
     def border(self, colour):
         self.outer_canvas.configure(bg=colour)

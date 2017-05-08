@@ -11,8 +11,8 @@ from .redbutton import RedButton
 from .numberdisplay import NumberDisplay
 from .borderedframe import BorderedFrame
 
-APP_WIDTH = 180
-APP_HEIGHT = 180
+APP_WIDTH = 160
+APP_HEIGHT = 170
 WINDOW_PADDING = 50
 
 class Mode:
@@ -39,17 +39,17 @@ class SubWindow(tk.Toplevel):
         self.height = APP_HEIGHT * self.scale
         if not self.show_button:
             self.height -= 110 * self.scale
-        offset = 15 * self.scale
+        offset = 10 * self.scale
         if self.frame is not None:
             self.frame.destroy()
         self.frame = BorderedFrame(self, width=self.width, height=self.height)
         self.frame.pack()
         if self.show_button:
-            self.redButton = RedButton(self.frame, width=100*self.scale, height=100*self.scale)
+            self.redButton = RedButton(self.frame.inner_canvas, width=100*self.scale, height=100*self.scale)
             self.redButton.bind("<<Click>>", self.on_trigger)
             self.redButton.place(bordermode='inside', x=(self.width-int(self.redButton['width']))/2,  y=offset)
             offset += 110 * self.scale
-        self.number_display = NumberDisplay(self.frame, width=160*self.scale, height=40*self.scale)
+        self.number_display = NumberDisplay(self.frame.inner_canvas, width=160*self.scale, height=40*self.scale)
         self.number_display.place(bordermode='inside', x=(self.width-(160*self.scale))/2, y=offset)
         self.fix_to_top_right()
 
