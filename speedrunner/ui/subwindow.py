@@ -37,6 +37,8 @@ class SubWindow(tk.Toplevel):
     def render(self):
         self.width = APP_WIDTH * self.scale
         self.height = APP_HEIGHT * self.scale
+        if len(self.stop_watch.splits) > 1:
+            self.height += (len(self.stop_watch.splits) * 30 * self.scale)
         if not self.show_button:
             self.height -= 110 * self.scale
         offset = 10 * self.scale
@@ -50,11 +52,19 @@ class SubWindow(tk.Toplevel):
             self.redButton.place(bordermode='inside', x=(self.width-int(self.redButton['width']))/2,  y=offset)
             offset += 110 * self.scale
         self.number_display = NumberDisplay(self.frame.inner_canvas, width=160*self.scale, height=40*self.scale)
-        self.number_display.place(bordermode='inside', x=(self.width-(160*self.scale))/2, y=offset)
+        self.number_display.place(bordermode='inside', x=0, y=offset, anchor="nw")
+        self.split_number_displays = []
+        if len(self.stop_watch.splits) > 1:
+            for i in xrange(len(self.stop_watch.splits)):
+                split_display = NumberDisplay(self.frame.inner_canvas, width=120*self.scale, height=30*self.scale)
+                split_display.place(bordermode='inside', x=40*self.scale, y=offset + (i*30 + 50)*self.scale, anchor="nw")
+                self.split_number_displays.append(split_display)
         self.fix_to_top_right()
 
     def update(self):
         self.number_display.set_time(self.stop_watch.read())
+        for i in xrange(len(self.split_number_displays)):
+            self.split_number_displays[i].set_time(self.stop_watch.splits[i].seconds())
         self.after(100, self.update)
 
     def remove_red_button(self):

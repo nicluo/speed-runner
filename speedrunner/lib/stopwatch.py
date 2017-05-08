@@ -44,7 +44,8 @@ class StopWatch():
 
     def split_previous(self):
         if len(self.splits) > 1:
-            self.splits[-2] = self.splits[-1] + self.splits[-2]
+            self.splits[-1] += self.splits[-2]
+            self.splits[-2] = self.splits[-1]
             self.splits.pop()
 
 class TimeInterval():
@@ -69,5 +70,6 @@ class TimeInterval():
 
     def merge(self, ti):
         self.elapsed_time += ti.elapsed_time
+        return self
 
     __iadd__ = merge
