@@ -48,6 +48,8 @@ class SubWindow(tk.Toplevel):
         if self.frame is not None:
             self.frame.destroy()
         self.frame = BorderedFrame(self, width=self.width, height=self.height)
+        if(self.stop_watch.running):
+            self.frame.border('red')
         self.frame.pack()
         if self.show_button:
             self.redButton = RedButton(self.frame.inner_canvas, width=100*self.scale, height=100*self.scale)
