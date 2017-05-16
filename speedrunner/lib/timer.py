@@ -24,15 +24,18 @@ class Timer():
         else:
             self.ti.start()
         self.running = not self.running
+        if self.expired():
+            self.reset()
         self.on_state_change(self.running)
 
     def reset(self):
         if self.running: # do not reset when running
             pass
+        elif self.expired():
+            self.ti = TimeInterval()
         else:
             self.ti = TimeInterval()
             self.setting = 0
-            self.on_state_change(self.running)
 
     def increment(self, seconds):
         self.setting += seconds
