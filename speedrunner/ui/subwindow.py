@@ -25,7 +25,7 @@ class SubWindow(tk.Toplevel):
         self.update_data()
 
     def resize_frame(self):
-        self.active_window.update()
+        self.active_window.update_idletasks()
         w = self.active_window.winfo_width()
         h = self.active_window.winfo_height()
         self.frame.dimensions(w, h)
