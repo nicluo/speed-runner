@@ -21,6 +21,9 @@ class StopWatchWindow(tk.Frame):
     def running(self):
         return self.stop_watch.running
 
+    def expired(self):
+        return False
+
     def to_scale(self, n):
         return self.scale * n
 

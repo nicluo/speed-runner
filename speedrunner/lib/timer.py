@@ -8,18 +8,21 @@ from .timeinterval import TimeInterval
 class Timer():
     def __init__(self):
         self.running = False
-        self.sw = TimeInterval()
+        self.ti = TimeInterval()
         self.setting = 0
         self.on_state_change = Event()
 
     def read(self):
-        return self.setting - self.sw.seconds()
+        return max(self.setting - self.ti.seconds(), 0)
+
+    def expired(self):
+        return self.setting < self.ti.seconds()
 
     def toggle(self):
         if self.running:
-            self.sw.stop()
+            self.ti.stop()
         else:
-            self.sw.start()
+            self.ti.start()
         self.running = not self.running
         self.on_state_change(self.running)
 
@@ -27,12 +30,12 @@ class Timer():
         if self.running: # do not reset when running
             pass
         else:
-            self.sw = TimeInterval()
+            self.ti = TimeInterval()
             self.setting = 0
             self.on_state_change(self.running)
 
-    def increment_second(self):
-        self.setting += 1
+    def increment(self, seconds):
+        self.setting += seconds
 
-    def increment_minute(self):
-        self.setting += 60
+    def decrement(self, seconds):
+        self.setting = max(self.setting - seconds, 0)

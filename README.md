@@ -6,7 +6,16 @@ SpeedRunner is an always-on-top timer for all your time-tracking needs.
 
     space -> start/ stop
     r     -> reset (only works when stopped)
+    m     -> switch modes (only works when stopped)
+
+    STOPWATCH
     n     -> next split
     b     -> previous split
-    h     -> hide/ show button
+
+    TIMER
+    up    -> add 1 minute
+    down  -> remove 1 minute
+
+    WINDOW
     +/-   -> make window larger/ smaller
+    h     -> hide/ show button (currently only stopwatch)

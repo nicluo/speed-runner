@@ -34,8 +34,8 @@ class SRWindow(tk.Tk):
         }
 
         self.timer_hotkeys = {
-            # "<up>": self.s.increment,
-            # "<down>": self.s.decrement,
+            "<Up>": self.s.dispatch_event('increment'),
+            "<Down>": self.s.dispatch_event('decrement'),
         }
 
         self.stopwatch_hotkeys = {

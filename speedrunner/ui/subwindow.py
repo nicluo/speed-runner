@@ -2,6 +2,7 @@
 Tkinter-based UI
 """
 
+import time
 import Tkinter as tk
 from ..lib.mode import Mode
 
@@ -35,6 +36,7 @@ class SubWindow(tk.Toplevel):
             self.frame.destroy()
         if self.active_window is not None:
             self.active_window.destroy()
+            self.active_window = None
         self.frame = BorderedFrame(self)
         self.frame.pack()
         if self.mode == Mode.STOPWATCH:
@@ -60,12 +62,22 @@ class SubWindow(tk.Toplevel):
         self.geometry(left + top)
 
     def update_data(self):
-        self.active_window.update_data()
+        if self.active_window is not None:
+            self.active_window.update_data()
         self.update_border()
         self.after(100, self.update_data)
 
     def update_border(self):
-        if self.active_window.running():
+        if self.active_window:
+            if self.active_window.expired():
+                self.update_border_expired()
+            elif self.active_window.running():
+                self.frame.border('red')
+        else:
+            self.frame.border('black')
+
+    def update_border_expired(self):
+        if int(time.time() * 2) % 2:
             self.frame.border('red')
         else:
             self.frame.border('black')
@@ -74,7 +86,7 @@ class SubWindow(tk.Toplevel):
         def call(e):
             dispatch_name = 'on_' + event
             try:
-                dispatch_next = getattr(self.stop_watch_window, dispatch_name)
+                dispatch_next = getattr(self.active_window, dispatch_name)
             except AttributeError:
                 pass
             else:
