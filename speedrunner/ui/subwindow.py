@@ -2,75 +2,51 @@
 Tkinter-based UI
 """
 
-import sys
 import Tkinter as tk
-from ..lib.stopwatch import StopWatch
-from ..lib.timer import Timer
 from ..lib.mode import Mode
 
-from .redbutton import RedButton
-from .numberdisplay import NumberDisplay
 from .borderedframe import BorderedFrame
+from .stopwatchwindow import StopWatchWindow
+from .timerwindow import TimerWindow
 
-APP_WIDTH = 160
-APP_HEIGHT = 170
 WINDOW_PADDING = 50
 
 class SubWindow(tk.Toplevel):
     """Sticky, always-on-top window for the main UI"""
     def __init__(self, *args, **kwargs):
         tk.Toplevel.__init__(self, *args, **kwargs)
-        self.stop_watch = StopWatch()
-        self.timer = Timer()
         self.mode = Mode.STOPWATCH
-        self.show_button = True
-        self.split_number_displays = []
-        self.scale = 1
+        self.stop_watch_window = None
+        self.timer_window = None
+        self.active_window = None
         self.frame = None
         self.window_config()
         self.render()
-        self.update()
+        self.update_data()
 
-    def calculate_size(self):
-        self.height = APP_HEIGHT * self.scale
-        self.width = APP_WIDTH * self.scale
-        if len(self.stop_watch.splits) > 1:
-            self.height += (len(self.stop_watch.splits) * 30 * self.scale)
-        if not self.show_button:
-            self.height -= 110 * self.scale
+    def resize_frame(self):
+        self.active_window.update()
+        w = self.active_window.winfo_width()
+        h = self.active_window.winfo_height()
+        self.frame.dimensions(w, h)
 
     def render(self):
-        self.calculate_size()
-        offset = 10 * self.scale
         if self.frame is not None:
             self.frame.destroy()
-        self.frame = BorderedFrame(self, width=self.width, height=self.height)
-        if(self.stop_watch.running):
-            self.frame.border('red')
+        if self.active_window is not None:
+            self.active_window.destroy()
+        self.frame = BorderedFrame(self)
         self.frame.pack()
-        if self.show_button:
-            self.redButton = RedButton(self.frame.inner_canvas, width=100*self.scale, height=100*self.scale)
-            self.redButton.bind("<<Click>>", self.on_trigger)
-            self.redButton.place(bordermode='inside', x=(self.width-int(self.redButton['width']))/2,  y=offset)
-            offset += 110 * self.scale
-        self.number_display = NumberDisplay(self.frame.inner_canvas, width=160*self.scale, height=40*self.scale)
-        self.number_display.place(bordermode='inside', x=0, y=offset, anchor="nw")
-        self.split_number_displays = []
-        if len(self.stop_watch.splits) > 1:
-            for i in xrange(len(self.stop_watch.splits)):
-                split_display = NumberDisplay(self.frame.inner_canvas, width=120*self.scale, height=30*self.scale)
-                split_display.place(bordermode='inside', x=40*self.scale, y=offset + (i*30 + 50)*self.scale, anchor="nw")
-                self.split_number_displays.append(split_display)
+        if self.mode == Mode.STOPWATCH:
+            self.stop_watch_window = StopWatchWindow(self.frame.inner_canvas)
+            self.stop_watch_window.place(bordermode='inside', x=0, y=0, anchor='nw')
+            self.active_window = self.stop_watch_window
+        elif self.mode == Mode.TIMER:
+            self.timer_window = TimerWindow(self.frame.inner_canvas)
+            self.timer_window.place(bordermode='inside', x=0, y=0, anchor='nw')
+            self.active_window = self.timer_window
+        self.resize_frame()
         self.fix_to_top_right()
-
-    def update(self):
-        self.number_display.set_time(self.stop_watch.read())
-        for i in xrange(len(self.split_number_displays)):
-            self.split_number_displays[i].set_time(self.stop_watch.splits[i].seconds())
-        self.after(100, self.update)
-
-    def remove_red_button(self):
-        self.redButton.destroy()
 
     def window_config(self):
         self.overrideredirect(1)
@@ -79,38 +55,59 @@ class SubWindow(tk.Toplevel):
 
     def fix_to_top_right(self):
         screen_width = self.winfo_screenwidth()
-        left = '+' + str(screen_width - WINDOW_PADDING - int(self.width))
+        left = '+' + str(screen_width - WINDOW_PADDING - int(self.active_window.winfo_width()))
         top = '+' + str(WINDOW_PADDING)
         self.geometry(left + top)
 
-    def on_trigger(self, event):
-        self.stop_watch.toggle()
-        if(self.stop_watch.running):
+    def update_data(self):
+        self.active_window.update_data()
+        self.update_border()
+        self.after(100, self.update_data)
+
+    def update_border(self):
+        if self.active_window.running():
             self.frame.border('red')
         else:
             self.frame.border('black')
 
-    def on_resize_up(self, event):
-        self.scale += 0.1
-        self.render()
+    def dispatch_event(self, event):
+        def call(e):
+            dispatch_name = 'on_' + event
+            try:
+                dispatch_next = getattr(self.stop_watch_window, dispatch_name)
+            except AttributeError:
+                pass
+            else:
+                dispatch_next()
+            try:
+                dispatch_self = getattr(self, dispatch_name)
+            except AttributeError:
+                pass
+            else:
+                dispatch_self()
+        return call
 
-    def on_resize_down(self, event):
-        self.scale -= 0.1
-        self.scale = max(self.scale, 0.6)
-        self.render()
+    def on_resize_up(self):
+        self.resize_frame()
+        self.fix_to_top_right()
 
-    def on_reset(self, event):
-        self.stop_watch.reset()
-        self.render()
+    def on_resize_down(self):
+        self.resize_frame()
+        self.fix_to_top_right()
 
-    def on_hide_button(self, event):
-        self.show_button = not self.show_button
-        self.render()
+    def on_hide_button(self):
+        self.resize_frame()
 
-    def split_next(self, event):
-        self.stop_watch.split_next()
-        self.render()
+    def on_split_next(self):
+        self.resize_frame()
 
-    def split_previous(self, event):
-        self.stop_watch.split_previous()
-        self.render()
+    def on_split_previous(self):
+        self.resize_frame()
+
+    def on_mode_toggle(self):
+        if not self.active_window.running():
+            if self.mode == Mode.STOPWATCH:
+                self.mode = Mode.TIMER
+            elif self.mode == Mode.TIMER:
+                self.mode = Mode.STOPWATCH
+            self.render()

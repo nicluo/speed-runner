@@ -25,12 +25,12 @@ class SRWindow(tk.Tk):
         self.hide()
 
         self.hotkeys = {
-            "<r>": self.s.on_reset,
-            "<h>": self.s.on_hide_button,
-            "<plus>": self.s.on_resize_up,
-            "<minus>": self.s.on_resize_down,
-            "<space>": self.s.on_trigger,
-            # "<m>": self.s.on_mode_toggle,
+            "<r>": self.s.dispatch_event('reset'),
+            "<h>": self.s.dispatch_event('hide_button'),
+            "<plus>": self.s.dispatch_event('resize_up'),
+            "<minus>": self.s.dispatch_event('resize_down'),
+            "<space>": self.s.dispatch_event('trigger'),
+            "<m>": self.s.dispatch_event('mode_toggle'),
         }
 
         self.timer_hotkeys = {
@@ -39,8 +39,8 @@ class SRWindow(tk.Tk):
         }
 
         self.stopwatch_hotkeys = {
-            "<n>": self.s.split_next,
-            "<p>": self.s.split_previous,
+            "<n>": self.s.dispatch_event('split_next'),
+            "<p>": self.s.dispatch_event('split_previous'),
         }
 
         self.hotkeys.update(self.timer_hotkeys)
