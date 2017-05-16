@@ -6,6 +6,7 @@ import sys
 import Tkinter as tk
 from ..lib.stopwatch import StopWatch
 from ..lib.timer import Timer
+from ..lib.mode import Mode
 
 from .redbutton import RedButton
 from .numberdisplay import NumberDisplay
@@ -14,10 +15,6 @@ from .borderedframe import BorderedFrame
 APP_WIDTH = 160
 APP_HEIGHT = 170
 WINDOW_PADDING = 50
-
-class Mode:
-    STOPWATCH = 1
-    TIMER = 2
 
 class SubWindow(tk.Toplevel):
     """Sticky, always-on-top window for the main UI"""
