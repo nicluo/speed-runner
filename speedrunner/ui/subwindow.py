@@ -68,12 +68,11 @@ class SubWindow(tk.Toplevel):
         self.after(100, self.update_data)
 
     def update_border(self):
-        if self.active_window:
-            if self.active_window.running():
-                if self.active_window.expired():
-                    self.update_border_expired()
-                else:
-                    self.frame.border('red')
+        if self.active_window and self.active_window.running():
+            if self.active_window.expired():
+                self.update_border_expired()
+            else:
+                self.frame.border('red')
         else:
             self.frame.border('black')
 
