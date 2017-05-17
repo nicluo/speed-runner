@@ -1,5 +1,6 @@
 import Tkinter as tk
 from ..lib.timer import Timer
+from ..lib.alarm import Alarm
 
 from .redbutton import RedButton
 from .numberdisplay import NumberDisplay
@@ -11,6 +12,7 @@ class TimerWindow(tk.Frame):
     def __init__(self, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
         self.timer = Timer()
+        self.alarm = Alarm()
         self.show_button = False
         self.up_button = None
         self.down_button = None
@@ -50,9 +52,16 @@ class TimerWindow(tk.Frame):
 
     def update_data(self):
         self.update_time()
+        self.update_alarm()
 
     def update_time(self):
         self.number_display.set_time(self.timer.read())
+
+    def update_alarm(self):
+        if self.timer.running and self.timer.expired():
+            self.alarm.play()
+        else:
+            self.alarm.stop()
 
     def on_trigger(self, event=None):
         self.timer.toggle()
