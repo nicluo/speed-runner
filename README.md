@@ -1,3 +1,5 @@
+[![Release](https://img.shields.io/github/release/nicluo/speed-runner.svg?style=flat-square)](https://github.com/nicluo/speed-runner/releases)
+
 # SpeedRunner - Stopwatch and Timer on Mac OS X
 
 SpeedRunner is an always-on-top timer for all your time-tracking needs.
